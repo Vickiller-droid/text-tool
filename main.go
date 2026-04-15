@@ -38,17 +38,22 @@ func processText(text string) string {
 	result = fixPunctuation(result)
 	result = fixApostrophes(result)
 	result = fixArticles(result)
-	return result
+	return strings.TrimSpace(result) + "\n"
 }
 
 func applyTransformations(tokens []string) []string {
 	result := make([]string, 0)
 
 	for i := 0; i < len(tokens); i++ {
-		tagName, count, isTag := parseTag(tokens[i])
+		token := tokens[i]
+		if strings.HasPrefix(token, "(") && !strings.HasSuffix(token, ")") && i+1 < len(tokens) {
+			token = token + tokens[i+1]
+			i++
+		}
+		tagName, count, isTag := parseTag(token)
 
 		if !isTag {
-			result = append(result, tokens[i])
+			result = append(result, token)
 			continue
 		}
 
